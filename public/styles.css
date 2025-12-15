@@ -1,0 +1,255 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #000000;
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.card {
+  background: #ffffff;
+  border: 2px solid #000000;
+  padding: 2rem;
+  box-shadow: none;
+}
+
+h1 {
+  text-align: center;
+  color: #000000;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.subtitle {
+  text-align: center;
+  color: #000000;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #000000;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #000000;
+  border-radius: 0;
+  font-size: 1rem;
+  transition: none;
+  font-family: inherit;
+  background: #ffffff;
+  color: #000000;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: none;
+  background: #f5f5f5;
+}
+
+input[type="number"]:invalid:not(:placeholder-shown) {
+  border-color: #000000;
+}
+
+input[type="number"][aria-invalid="true"] {
+  border-color: #000000;
+}
+
+.error-message {
+  display: block;
+  color: #000000;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  min-height: 1.25rem;
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 0.875rem;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: none;
+  text-decoration: none;
+  text-align: center;
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+.btn:active {
+  background: #000000;
+  color: #ffffff;
+}
+
+.btn-primary {
+  margin-top: 0.5rem;
+}
+
+/* Result page styles */
+.result-card {
+  text-align: center;
+}
+
+.result-section {
+  padding: 2rem;
+  border: 2px solid #000000;
+  border-radius: 0;
+  margin: 1.5rem 0;
+  background: #ffffff;
+}
+
+.result-section h2 {
+  margin-bottom: 1rem;
+  color: #000000;
+  font-size: 1.25rem;
+}
+
+.bmi-value {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: #000000;
+}
+
+.bmi-category {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #000000;
+}
+
+.result-details {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #000000;
+  text-align: left;
+}
+
+.result-details p {
+  margin: 0.5rem 0;
+  color: #000000;
+}
+
+/* Categories - all black and white */
+.result-section.underweight {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.result-section.underweight .bmi-category {
+  color: #000000;
+}
+
+.result-section.normal {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.result-section.normal .bmi-category {
+  color: #000000;
+}
+
+.result-section.overweight {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.result-section.overweight .bmi-category {
+  color: #000000;
+}
+
+.result-section.obese {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.result-section.obese .bmi-category {
+  color: #000000;
+}
+
+/* Error page styles */
+.error-card {
+  text-align: center;
+}
+
+.error-card .error-message {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 0;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.error-card .error-message h2 {
+  color: #000000;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.error-card .error-message ul {
+  list-style-position: inside;
+  color: #000000;
+}
+
+.error-card .error-message li {
+  margin: 0.5rem 0;
+}
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 600px) {
+  .card {
+    padding: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .bmi-value {
+    font-size: 2.5rem;
+  }
+
+  .bmi-category {
+    font-size: 1.25rem;
+  }
+}

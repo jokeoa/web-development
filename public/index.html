@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI Calculator</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>BMI Calculator</h1>
+      <p class="subtitle">Calculate your Body Mass Index</p>
+      
+      <form id="bmiForm" action="/calculate-bmi" method="POST" novalidate>
+        <div class="form-group">
+          <label for="weight">Weight (kg)</label>
+          <input 
+            type="number" 
+            id="weight" 
+            name="weight" 
+            placeholder="Enter weight in kilograms"
+            step="0.1"
+            min="0.1"
+            required
+            aria-describedby="weight-error"
+          >
+          <span class="error-message" id="weight-error" role="alert" aria-live="polite"></span>
+        </div>
+        
+        <div class="form-group">
+          <label for="height">Height (m)</label>
+          <input 
+            type="number" 
+            id="height" 
+            name="height" 
+            placeholder="Enter height in meters"
+            step="0.01"
+            min="0.1"
+            required
+            aria-describedby="height-error"
+          >
+          <span class="error-message" id="height-error" role="alert" aria-live="polite"></span>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Calculate BMI</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('bmiForm');
+    const weightInput = document.getElementById('weight');
+    const heightInput = document.getElementById('height');
+    const weightError = document.getElementById('weight-error');
+    const heightError = document.getElementById('height-error');
+
+    function validateWeight() {
+      const weight = weightInput.value.trim();
+      if (!weight) {
+        weightError.textContent = 'Weight is required';
+        weightInput.setAttribute('aria-invalid', 'true');
+        return false;
+      }
+      const weightNum = parseFloat(weight);
+      if (isNaN(weightNum) || weightNum <= 0) {
+        weightError.textContent = 'Weight must be a positive number';
+        weightInput.setAttribute('aria-invalid', 'true');
+        return false;
+      }
+      weightError.textContent = '';
+      weightInput.setAttribute('aria-invalid', 'false');
+      return true;
+    }
+
+    function validateHeight() {
+      const height = heightInput.value.trim();
+      if (!height) {
+        heightError.textContent = 'Height is required';
+        heightInput.setAttribute('aria-invalid', 'true');
+        return false;
+      }
+      const heightNum = parseFloat(height);
+      if (isNaN(heightNum) || heightNum <= 0) {
+        heightError.textContent = 'Height must be a positive number';
+        heightInput.setAttribute('aria-invalid', 'true');
+        return false;
+      }
+      heightError.textContent = '';
+      heightInput.setAttribute('aria-invalid', 'false');
+      return true;
+    }
+
+    weightInput.addEventListener('blur', validateWeight);
+    weightInput.addEventListener('input', function() {
+      if (weightError.textContent) {
+        validateWeight();
+      }
+    });
+
+    heightInput.addEventListener('blur', validateHeight);
+    heightInput.addEventListener('input', function() {
+      if (heightError.textContent) {
+        validateHeight();
+      }
+    });
+
+    form.addEventListener('submit', function(e) {
+      const isWeightValid = validateWeight();
+      const isHeightValid = validateHeight();
+      
+      if (!isWeightValid || !isHeightValid) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>
