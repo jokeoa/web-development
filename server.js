@@ -2,110 +2,224 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const calculateBMI = (weight, height) => weight / (height * height);
+function sendOk(res, data) {
+  res.json({ ok: true, data });
+}
 
-const getBMICategory = (bmi) => {
-  if (bmi < 18.5) return { category: 'Underweight', class: 'underweight' };
-  if (bmi < 24.9) return { category: 'Normal weight', class: 'normal' };
-  if (bmi < 29.9) return { category: 'Overweight', class: 'overweight' };
-  return { category: 'Obese', class: 'obese' };
-};
+function sendError(res, status, code, message) {
+  res.status(status).json({
+    ok: false,
+    error: { code, message }
+  });
+}
 
-const validateInputs = (weight, height) => {
-  const errors = [];
-  const validateNumber = (value, name) => {
-    if (!value || value === '') {
-      errors.push(`${name} is required`);
-    } else {
-      const num = parseFloat(value);
-      if (isNaN(num) || num <= 0) {
-        errors.push(`${name} must be a positive number`);
-      }
+async function fetchJson(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutMs = 12_000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    const contentType = res.headers.get('content-type') || '';
+    const isJson = contentType.includes('application/json');
+    const body = isJson ? await res.json() : await res.text();
+
+    if (!res.ok) {
+      const message = typeof body === 'string'
+        ? body
+        : (body?.message || body?.error || 'Upstream request failed');
+      const err = new Error(message);
+      err.status = res.status;
+      err.body = body;
+      throw err;
     }
-  };
-  validateNumber(weight, 'Weight');
-  validateNumber(height, 'Height');
-  return errors;
-};
 
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.post('/calculate-bmi', (req, res) => {
-  const { weight, height } = req.body;
-  const errors = validateInputs(weight, height);
-  
-  if (errors.length > 0) {
-    return res.status(400).send(`
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>BMI Calculator - Error</title>
-        <link rel="stylesheet" href="/styles.css">
-      </head>
-      <body>
-        <div class="container">
-          <div class="card error-card">
-            <h1>BMI Calculator</h1>
-            <div class="error-message">
-              <h2>Validation Error</h2>
-              <ul>
-                ${errors.map(error => `<li>${error}</li>`).join('')}
-              </ul>
-            </div>
-            <a href="/" class="btn btn-primary">Back to Calculator</a>
-          </div>
-        </div>
-      </body>
-      </html>
-    `);
+    return body;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  
-  const bmi = calculateBMI(parseFloat(weight), parseFloat(height));
-  const bmiRounded = Math.round(bmi * 10) / 10;
-  const { category, class: categoryClass } = getBMICategory(bmi);
-  
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>BMI Calculator - Result</title>
-      <link rel="stylesheet" href="/styles.css">
-    </head>
-    <body>
-      <div class="container">
-        <div class="card result-card">
-          <h1>BMI Calculator</h1>
-          <div class="result-section ${categoryClass}">
-            <h2>Your BMI Result</h2>
-            <div class="bmi-value">${bmiRounded}</div>
-            <div class="bmi-category">${category}</div>
-            <div class="result-details">
-              <p><strong>Weight:</strong> ${weight} kg</p>
-              <p><strong>Height:</strong> ${height} m</p>
-            </div>
-          </div>
-          <a href="/" class="btn btn-primary">Calculate Again</a>
-        </div>
-      </div>
-    </body>
-    </html>
-  `);
+}
+
+function pickFirstCountryMatch(countries, requestedName) {
+  if (!Array.isArray(countries) || countries.length === 0) return null;
+
+  const target = String(requestedName || '').trim().toLowerCase();
+  const exact = countries.find(c => String(c?.name?.common || '').trim().toLowerCase() === target);
+  return exact || countries[0];
+}
+
+function normalizeCountryData(country) {
+  const countryName = country?.name?.common || 'Unknown';
+  const capitalCity = Array.isArray(country?.capital) && country.capital[0] ? country.capital[0] : 'Unknown';
+  const languages = country?.languages && typeof country.languages === 'object'
+    ? Object.values(country.languages).filter(Boolean)
+    : [];
+
+  let currency = { code: 'Unknown', name: 'Unknown' };
+  if (country?.currencies && typeof country.currencies === 'object') {
+    const [code] = Object.keys(country.currencies);
+    const c = code ? country.currencies[code] : null;
+    currency = {
+      code: code || 'Unknown',
+      name: c?.name || 'Unknown'
+    };
+  }
+
+  const flagUrl = country?.flags?.png || country?.flags?.svg || null;
+  const flagEmoji = country?.flag || null;
+
+  return { countryName, capitalCity, languages, currency, flagUrl, flagEmoji };
+}
+
+app.get('/api/random-user', async (req, res) => {
+  try {
+    const payload = await fetchJson('https://randomuser.me/api/');
+    const user = Array.isArray(payload?.results) ? payload.results[0] : null;
+
+    if (!user) {
+      return sendError(res, 502, 'UPSTREAM_INVALID_RESPONSE', 'Random User API returned unexpected data.');
+    }
+
+    const data = {
+      firstName: user?.name?.first || 'Unknown',
+      lastName: user?.name?.last || 'Unknown',
+      gender: user?.gender || 'Unknown',
+      profilePictureUrl: user?.picture?.large || user?.picture?.medium || null,
+      age: typeof user?.dob?.age === 'number' ? user.dob.age : null,
+      dateOfBirth: user?.dob?.date || null,
+      city: user?.location?.city || 'Unknown',
+      country: user?.location?.country || 'Unknown',
+      fullAddress: user?.location?.street
+        ? `${user.location.street.name || ''} ${user.location.street.number || ''}`.trim() || 'Unknown'
+        : 'Unknown'
+    };
+
+    return sendOk(res, data);
+  } catch (err) {
+    return sendError(res, 502, 'UPSTREAM_ERROR', err?.message || 'Failed to fetch random user.');
+  }
 });
 
+app.get('/api/country/:countryName', async (req, res) => {
+  const countryName = String(req.params.countryName || '').trim();
+  if (!countryName) return sendError(res, 400, 'BAD_REQUEST', 'countryName is required.');
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  try {
+    const url = `https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}`;
+    const payload = await fetchJson(url);
+
+    const country = pickFirstCountryMatch(payload, countryName);
+    const data = country ? normalizeCountryData(country) : normalizeCountryData(null);
+
+    return sendOk(res, data);
+  } catch (err) {
+    const fallback = normalizeCountryData(null);
+    return sendOk(res, {
+      ...fallback,
+      note: 'Country data is unavailable right now.'
+    });
+  }
+});
+
+app.get('/api/exchange/:currencyCode', async (req, res) => {
+  const currencyCode = String(req.params.currencyCode || '').trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(currencyCode)) {
+    return sendError(res, 400, 'BAD_REQUEST', 'currencyCode must be a 3-letter code (e.g. EUR).');
+  }
+
+  try {
+    const url = `https://open.er-api.com/v6/latest/${encodeURIComponent(currencyCode)}`;
+    const payload = await fetchJson(url);
+
+    const rates = payload?.rates;
+    const usdRate = rates?.USD;
+    const kztRate = rates?.KZT;
+
+    if (typeof usdRate !== 'number' || typeof kztRate !== 'number') {
+      return sendError(res, 502, 'UPSTREAM_INVALID_RESPONSE', 'Exchange rate API returned unexpected data.');
+    }
+
+    const data = {
+      baseCurrency: currencyCode,
+      usd: {
+        code: 'USD',
+        rate: usdRate,
+        formatted: `1 ${currencyCode} = ${usdRate.toFixed(2)} USD`
+      },
+      kzt: {
+        code: 'KZT',
+        rate: kztRate,
+        formatted: `1 ${currencyCode} = ${kztRate.toFixed(2)} KZT`
+      }
+    };
+
+    return sendOk(res, data);
+  } catch (err) {
+    return sendError(res, 502, 'UPSTREAM_ERROR', err?.message || 'Failed to fetch exchange rates.');
+  }
+});
+
+app.get('/api/news/:country', async (req, res) => {
+  const country = String(req.params.country || '').trim();
+  if (!country) return sendError(res, 400, 'BAD_REQUEST', 'country is required.');
+
+  try {
+    const url = new URL('https://api.gdeltproject.org/api/v2/doc/doc');
+    url.searchParams.set('mode', 'artlist');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('maxrecords', '100');
+    url.searchParams.set('sort', 'datedesc');
+    url.searchParams.set('timespan', '30d');
+    url.searchParams.set('query', country);
+
+    const payload = await fetchJson(url.toString());
+    const articles = Array.isArray(payload?.articles) ? payload.articles : [];
+
+    const normalize = (a) => ({
+      title: a?.title || 'Untitled',
+      imageUrl: a?.socialimage || null,
+      description: a?.description || 'No description available.',
+      url: a?.url || null
+    });
+
+    const countryLower = country.toLowerCase();
+    const titleMatches = (a) => String(a?.title || '').toLowerCase().includes(countryLower);
+
+    const english = articles
+      .filter(a => titleMatches(a))
+      .filter(a => !a?.language || String(a.language).toLowerCase() === 'english')
+      .map(normalize)
+      .filter(a => a.url);
+
+    const anyLang = articles
+      .filter(a => titleMatches(a))
+      .map(normalize)
+      .filter(a => a.url);
+
+    const merged = [];
+    for (const item of english) {
+      if (merged.length >= 5) break;
+      merged.push(item);
+    }
+    for (const item of anyLang) {
+      if (merged.length >= 5) break;
+      if (!merged.some(x => x.url === item.url)) merged.push(item);
+    }
+
+    const cleaned = merged.slice(0, 5);
+
+    return sendOk(res, cleaned);
+  } catch (err) {
+    return sendError(res, 502, 'UPSTREAM_ERROR', err?.message || 'Failed to fetch news.');
+  }
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

@@ -1,255 +1,333 @@
+:root {
+  --bg: #ffffff;
+  --border: #000000;
+  --text: #000000;
+  --muted: #666666;
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #ffffff;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 18px 50px;
+}
+
+.appHeader {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  padding: 18px 18px 14px;
+}
+
+.appHeaderInner {
   display: flex;
+  gap: 16px;
   align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: #000000;
-}
-
-.container {
-  width: 100%;
-  max-width: 500px;
-}
-
-.card {
-  background: #ffffff;
-  border: 2px solid #000000;
-  padding: 2rem;
-  box-shadow: none;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 h1 {
-  text-align: center;
-  color: #000000;
-  margin-bottom: 0.5rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  text-align: center;
-  color: #000000;
-  margin-bottom: 2rem;
-  font-size: 0.95rem;
-  opacity: 0.7;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #000000;
-  font-weight: 500;
+  margin-top: 6px;
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
-input[type="number"] {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #000000;
-  border-radius: 0;
-  font-size: 1rem;
-  transition: none;
-  font-family: inherit;
-  background: #ffffff;
-  color: #000000;
-}
-
-input[type="number"]:focus {
-  outline: none;
-  border-color: #000000;
-  box-shadow: none;
-  background: #f5f5f5;
-}
-
-input[type="number"]:invalid:not(:placeholder-shown) {
-  border-color: #000000;
-}
-
-input[type="number"][aria-invalid="true"] {
-  border-color: #000000;
-}
-
-.error-message {
-  display: block;
-  color: #000000;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
+.status {
+  margin-top: 10px;
   min-height: 1.25rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.status[data-type="error"] {
+  color: var(--text);
+  font-weight: bold;
+}
+
+.content {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.card {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  padding: 16px;
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.card h3 {
+  margin-top: 14px;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.cardBody {
+  margin-top: 12px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
 }
 
 .btn {
-  display: inline-block;
-  width: 100%;
-  padding: 0.875rem;
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #000000;
+  appearance: none;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
   border-radius: 0;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 12px 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: none;
-  text-decoration: none;
-  text-align: center;
-  font-family: inherit;
 }
 
 .btn:hover {
-  background: #ffffff;
-  color: #000000;
+  background: var(--text);
+  color: var(--bg);
 }
 
 .btn:active {
-  background: #000000;
-  color: #ffffff;
+  background: var(--muted);
+  color: var(--bg);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .btn-primary {
-  margin-top: 0.5rem;
+  border: 2px solid var(--border);
+  background: var(--text);
+  color: var(--bg);
 }
 
-/* Result page styles */
-.result-card {
-  text-align: center;
+.btn-primary:hover {
+  background: var(--muted);
+  color: var(--bg);
 }
 
-.result-section {
-  padding: 2rem;
-  border: 2px solid #000000;
+.kv {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.kv dt {
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 0.95rem;
+}
+
+.kv dd {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.avatarWrap {
+  width: 110px;
+  height: 110px;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
   border-radius: 0;
-  margin: 1.5rem 0;
-  background: #ffffff;
+  object-fit: cover;
+  border: 2px solid var(--border);
 }
 
-.result-section h2 {
-  margin-bottom: 1rem;
-  color: #000000;
-  font-size: 1.25rem;
+.profileTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
-.bmi-value {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin: 1rem 0;
-  color: #000000;
-}
-
-.bmi-category {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #000000;
-}
-
-.result-details {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #000000;
-  text-align: left;
-}
-
-.result-details p {
-  margin: 0.5rem 0;
-  color: #000000;
-}
-
-/* Categories - all black and white */
-.result-section.underweight {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-}
-
-.result-section.underweight .bmi-category {
-  color: #000000;
-}
-
-.result-section.normal {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-}
-
-.result-section.normal .bmi-category {
-  color: #000000;
-}
-
-.result-section.overweight {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-}
-
-.result-section.overweight .bmi-category {
-  color: #000000;
-}
-
-.result-section.obese {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-}
-
-.result-section.obese .bmi-category {
-  color: #000000;
-}
-
-/* Error page styles */
-.error-card {
-  text-align: center;
-}
-
-.error-card .error-message {
-  background-color: #ffffff;
-  border: 2px solid #000000;
+.imgPlaceholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--border);
   border-radius: 0;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  text-align: left;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--bg);
+  font-size: 0.9rem;
 }
 
-.error-card .error-message h2 {
-  color: #000000;
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+.countryHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.error-card .error-message ul {
-  list-style-position: inside;
-  color: #000000;
+.flagBox {
+  width: 58px;
+  height: 40px;
 }
 
-.error-card .error-message li {
-  margin: 0.5rem 0;
+.flag {
+  width: 58px;
+  height: 40px;
+  border-radius: 0;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  background: var(--bg);
 }
 
-*{
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.countryTitle {
+  font-weight: 900;
+  letter-spacing: -0.01em;
 }
-@media (max-width: 600px) {
-  .card {
-    padding: 1.5rem;
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.newsItem {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.newsMedia {
+  width: 140px;
+  height: 110px;
+  background: var(--bg);
+}
+
+.newsImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.newsBody {
+  padding: 12px 12px 12px 0;
+}
+
+.newsTitle {
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.newsDesc {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.newsLink {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 750;
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.newsLink:hover {
+  text-decoration: none;
+}
+
+@media (min-width: 900px) {
+  .content {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
 
-  h1 {
-    font-size: 1.75rem;
+  .cardWide {
+    grid-column: 1 / -1;
   }
 
-  .bmi-value {
-    font-size: 2.5rem;
+  .newsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .profile {
+    grid-template-columns: 1fr;
   }
 
-  .bmi-category {
-    font-size: 1.25rem;
+  .avatarWrap {
+    width: 100%;
+    height: auto;
+  }
+
+  .avatar,
+  .imgPlaceholder {
+    width: 100%;
+    height: 220px;
+  }
+
+  .kv {
+    grid-template-columns: 1fr;
+  }
+
+  .newsItem {
+    grid-template-columns: 1fr;
+  }
+
+  .newsMedia {
+    width: 100%;
+    height: 180px;
+  }
+
+  .newsBody {
+    padding: 12px;
   }
 }
